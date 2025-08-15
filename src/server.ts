@@ -1,11 +1,32 @@
-const express = require("express");
-const app = express();
-const port = 3000;
+import mongoose from 'mongoose';
+import { Server } from 'http';
+import app from './app/app';
+import config from './app/config';
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+let server: Server;
+
+async function main() {
+  try {
+    await mongoose.connect(config.database_url as string);
+    app.listen(config.Port, () => {
+      console.log(`Example app is listening on port ${config.Port}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+main();
+
+process.on('unhandledRejection', () => {
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+process.on('uncaughtException', () => {
+  process.exit(1);
 });
