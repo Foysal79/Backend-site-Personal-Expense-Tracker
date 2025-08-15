@@ -26,8 +26,36 @@ const registerUser = async (userData: IUser) => {
 };
 
 
+// Login user
+const loginUser = async (email: string, password: string) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
+
+  // Compare passwords
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error("Invalid credentials");
+  }
+
+  // Generate JWT token
+  const token = jwt.sign(
+    { id: user._id, email: user.email },
+    config.jwt_secret as string,
+    { expiresIn: "1d" }
+  );
+
+  return {
+    token,
+    user: {
+      id: user._id,
+      email: user.email,
+    },
+  };
+};
 
 export const authService = {
   registerUser,
-  
+  loginUser,
 };
