@@ -2,13 +2,14 @@ import express, {  Application, NextFunction, Request, Response   } from 'expres
 import cors from 'cors';
 import router from './routes';
 
+
 const app: Application = express();
 // parser
 app.use(express.json());
 app.use(cors());
 
 // application router 
-//app.use('/expenses', router);
+app.use('/expenses', router);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
